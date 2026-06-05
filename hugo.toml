@@ -1,6 +1,11 @@
 baseURL = "https://stream.wenzl.no/"
-languageCode = "cs"
+defaultContentLanguage = "cs"
 title = "stream.wenzl.no"
+
+[languages]
+  [languages.cs]
+    locale = "cs-CZ"
+    weight = 1
 theme = "stream"
 paginate = 12
 summaryLength = 70

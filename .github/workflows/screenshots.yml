@@ -1,0 +1,115 @@
+name: PR Preview Screenshots
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: false
+
+      - name: Build
+        env:
+          HUGO_ENVIRONMENT: production
+        run: hugo --minify
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright (Chromium only)
+        run: |
+          npm init -y
+          npm install playwright@latest
+          npx playwright install chromium --with-deps
+
+      - name: Serve & screenshot
+        run: |
+          cd public
+          python3 -m http.server 1313 &
+          sleep 2
+          cd ..
+
+          mkdir -p screenshots
+
+          node <<'EOF'
+          const { chromium } = require('playwright');
+
+          const PAGES = [
+            { name: 'homepage',   url: 'http://localhost:1313/' },
+            { name: 'videos',     url: 'http://localhost:1313/videos/' },
+            { name: 'categories', url: 'http://localhost:1313/categories/' },
+            { name: 'roj-2024',   url: 'http://localhost:1313/videos/roj-2024/' },
+          ];
+
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            await page.setViewportSize({ width: 1280, height: 900 });
+
+            for (const { name, url } of PAGES) {
+              try {
+                await page.goto(url, { waitUntil: 'networkidle', timeout: 10000 });
+                await page.screenshot({ path: `screenshots/${name}.png`, fullPage: true });
+                console.log(`✓ ${name}`);
+              } catch (e) {
+                console.log(`✗ ${name}: ${e.message}`);
+              }
+            }
+
+            await browser.close();
+          })();
+          EOF
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        id: upload
+        with:
+          name: pr-${{ github.event.pull_request.number }}-screenshots
+          path: screenshots/
+          retention-days: 14
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const pages = ['homepage', 'videos', 'categories', 'roj-2024'];
+            const rows = pages.map(p => `| \`${p}\` | ✓ |`).join('\n');
+
+            const body = [
+              '## 📸 Preview screenshoty',
+              '',
+              `Sestaveno z větve \`${context.payload.pull_request.head.ref}\`.`,
+              '',
+              '| Stránka | Status |',
+              '|---------|--------|',
+              rows,
+              '',
+              `[Stáhnout screenshoty (artefakty)](${runUrl})`,
+              '',
+              '*Artefakty jsou dostupné 14 dní.*',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
