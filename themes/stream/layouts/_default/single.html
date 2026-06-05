@@ -1,0 +1,116 @@
+{{ define "main" }}
+<article class="video-single">
+
+  {{/* ── Přehrávač ── */}}
+  <div class="video-single__player-wrap">
+    {{ if .Params.video_src }}
+      <video
+        class="video-single__player"
+        controls
+        preload="metadata"
+        {{ with .Params.thumbnail }}poster="{{ . | absURL }}"{{ end }}>
+        <source src="{{ .Params.video_src }}" type="video/mp4">
+        <p>Váš prohlížeč nepodporuje přehrávání videa HTML5.</p>
+      </video>
+    {{ else if .Params.embed_url }}
+      <iframe
+        class="video-single__embed"
+        src="{{ .Params.embed_url }}"
+        allowfullscreen
+        allow="fullscreen"
+        frameborder="0"
+        title="{{ .Title }}">
+      </iframe>
+    {{ else }}
+      <div class="video-single__no-video">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
+        <p>Video není k dispozici</p>
+      </div>
+    {{ end }}
+  </div>
+
+  {{/* ── Hlavička ── */}}
+  <div class="video-single__header">
+    <h1 class="video-single__title">{{ .Title }}</h1>
+
+    <div class="video-single__meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2. 1. 2006" }}</time>
+      {{ with .Params.duration }}
+        <span class="video-single__meta-sep">·</span>
+        <span>{{ . }}</span>
+      {{ end }}
+      {{ with .Params.type_video }}
+        <span class="video-single__meta-sep">·</span>
+        <span class="badge badge--{{ . }}">{{ if eq . "short" }}Krátké{{ else }}Dlouhé{{ end }}</span>
+      {{ end }}
+      {{ with .Params.categories }}
+        <span class="video-single__meta-sep">·</span>
+        <div class="video-single__cats">
+          {{ range . }}
+            <a href="{{ "/categories/" | relURL }}{{ . | urlize }}/" class="video-single__cat">{{ . }}</a>
+          {{ end }}
+        </div>
+      {{ end }}
+    </div>
+  </div>
+
+  {{/* ── Akce: sdílet / vložit ── */}}
+  <div class="video-single__actions">
+    {{ $embedURL := printf "%s%sembed/" .Site.Params.siteURL .RelPermalink }}
+    <button
+      class="btn btn--outline"
+      onclick="toggleEmbed()"
+      aria-expanded="false"
+      aria-controls="embed-box"
+      id="embed-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 20H8V4h2v2h2v3h2v2h2v2h-2v2h-2v3h-2v2zm-2 0H4v-2H2v-2h2v-2h2v-2H4v-2H2V8h2V6h2V4h2v2H6v2H4v2h2v2h2v2H6v2h2v2zm12-6h-2v-2h-2v-2h2V8h2V6h2v2h-2v2h2v2h-2v2h-2v2z"/></svg>
+      Vložit na web
+    </button>
+    <a
+      href="{{ .Permalink }}"
+      class="btn btn--outline"
+      onclick="copyLink(event, this)"
+      data-url="{{ .Permalink }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      Kopírovat odkaz
+    </a>
+  </div>
+
+  {{/* ── Embed kód ── */}}
+  {{ $embedSrc := printf "%sembed/" .Permalink }}
+  <div id="embed-box" class="embed-box" role="region" aria-label="Embed kód">
+    <label for="embed-code">Vložte na svůj web pomocí iframe:</label>
+    <textarea id="embed-code" readonly onclick="this.select()">&lt;iframe src="{{ $embedSrc }}" width="800" height="450" allowfullscreen frameborder="0" title="{{ .Title }}"&gt;&lt;/iframe&gt;</textarea>
+    <p class="embed-copy-hint">Klikněte do pole a zkopírujte kód (Ctrl+A, Ctrl+C)</p>
+  </div>
+
+  {{/* ── Popis ── */}}
+  {{ with .Params.description }}
+    <div class="video-single__description">{{ . }}</div>
+  {{ end }}
+
+  {{/* ── Obsah (Markdown) ── */}}
+  {{ if .Content }}
+    <div class="video-single__content">{{ .Content }}</div>
+  {{ end }}
+
+  {{/* ── Další videa v kategorii ── */}}
+  {{ with .Params.categories }}
+    {{ $cat := index . 0 }}
+    {{ $related := where $.Site.RegularPages ".Params.categories" "intersect" $.Params.categories }}
+    {{ $related  = where $related ".Permalink" "ne" $.Permalink }}
+    {{ $related  = first 4 (sort $related ".Date" "desc") }}
+    {{ if $related }}
+      <section class="related-section">
+        <h2 class="section-title">Další videa</h2>
+        <div class="videos-grid">
+          {{ range $related }}
+            {{ partial "video-card.html" (dict "video" .) }}
+          {{ end }}
+        </div>
+      </section>
+    {{ end }}
+  {{ end }}
+
+</article>
+{{ end }}

@@ -1,0 +1,20 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} – {{ .Site.Title }}{{ end }}</title>
+<meta name="description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+<link rel="stylesheet" href="{{ "css/main.css" | absURL }}">
+<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "/index.xml" | absURL }}">
+{{ if .IsPage }}
+<meta property="og:title" content="{{ .Title }}">
+<meta property="og:description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:type" content="{{ if .Params.video_src }}video.other{{ else }}website{{ end }}">
+<meta property="og:site_name" content="{{ .Site.Title }}">
+{{ with .Params.thumbnail }}<meta property="og:image" content="{{ . | absURL }}">{{ end }}
+{{ with .Params.video_src }}<meta property="og:video" content="{{ . }}">
+<meta property="og:video:type" content="video/mp4">{{ end }}
+<meta name="twitter:card" content="{{ if .Params.thumbnail }}summary_large_image{{ else }}summary{{ end }}">
+<meta name="twitter:title" content="{{ .Title }}">
+<meta name="twitter:description" content="{{ with .Params.description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+{{ with .Params.thumbnail }}<meta name="twitter:image" content="{{ . | absURL }}">{{ end }}
+{{ end }}
