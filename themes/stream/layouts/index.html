@@ -1,0 +1,40 @@
+{{ define "main" }}
+{{ $allVideos := where .Site.RegularPages "Section" "videos" }}
+{{ $featured  := where $allVideos ".Params.featured" true }}
+{{ $recent    := first 12 (sort $allVideos ".Date" "desc") }}
+
+{{/* ── Doporučená videa ── */}}
+{{ if $featured }}
+<section class="featured-section">
+  <div class="section-header">
+    <h2 class="section-title"><span class="icon">★</span> Doporučená videa</h2>
+  </div>
+  <div class="featured-grid">
+    {{ range $featured }}
+      {{ partial "video-card.html" (dict "video" . "size" "large") }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+
+{{/* ── Nejnovější videa ── */}}
+<section class="recent-section">
+  <div class="section-header">
+    <h2 class="section-title">Nejnovější videa</h2>
+    {{ if gt (len $allVideos) 12 }}
+      <a href="{{ "/videos/" | relURL }}" class="section-link">Zobrazit vše →</a>
+    {{ end }}
+  </div>
+  {{ if $recent }}
+    <div class="videos-grid">
+      {{ range $recent }}
+        {{ partial "video-card.html" (dict "video" .) }}
+      {{ end }}
+    </div>
+  {{ else }}
+    <div class="no-results">
+      <p>Zatím žádná videa. Brzy přibudou!</p>
+    </div>
+  {{ end }}
+</section>
+{{ end }}

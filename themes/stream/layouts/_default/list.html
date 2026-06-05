@@ -1,0 +1,40 @@
+{{ define "main" }}
+<div class="list-header">
+  <h1>{{ if .IsHome }}Videa{{ else }}{{ .Title }}{{ end }}</h1>
+  {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
+</div>
+
+{{ $pages := .Paginator.Pages }}
+
+{{ if $pages }}
+  <div class="videos-grid">
+    {{ range $pages }}
+      {{ partial "video-card.html" (dict "video" .) }}
+    {{ end }}
+  </div>
+
+  {{/* Stránkování */}}
+  {{ $pager := .Paginator }}
+  {{ if gt $pager.TotalPages 1 }}
+    <nav class="pagination" aria-label="Stránkování">
+      {{ if $pager.HasPrev }}
+        <a href="{{ $pager.Prev.URL }}" class="pagination__prev">← Novější</a>
+      {{ end }}
+      {{ range $pager.Pagers }}
+        {{ if eq . $pager }}
+          <span class="active"><span>{{ .PageNumber }}</span></span>
+        {{ else }}
+          <a href="{{ .URL }}">{{ .PageNumber }}</a>
+        {{ end }}
+      {{ end }}
+      {{ if $pager.HasNext }}
+        <a href="{{ $pager.Next.URL }}" class="pagination__next">Starší →</a>
+      {{ end }}
+    </nav>
+  {{ end }}
+{{ else }}
+  <div class="no-results">
+    <p>V této kategorii zatím nejsou žádná videa.</p>
+  </div>
+{{ end }}
+{{ end }}

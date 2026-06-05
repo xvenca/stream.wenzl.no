@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+<head>
+  {{- partial "head.html" . -}}
+</head>
+<body class="{{ if .IsHome }}page--home{{ else if .IsPage }}page--single{{ else }}page--list{{ end }}">
+  {{- partial "header.html" . -}}
+  <main class="main">
+    <div class="container">
+      {{- block "main" . }}{{- end }}
+    </div>
+  </main>
+  {{- partial "footer.html" . -}}
+  <script src="{{ "js/player.js" | absURL }}" defer></script>
+</body>
+</html>

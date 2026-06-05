@@ -1,0 +1,56 @@
+{{ $video := .video }}
+{{ $size  := .size | default "normal" }}
+<article class="video-card{{ if $video.Params.featured }} video-card--featured{{ end }} video-card--{{ $size }}">
+  <a href="{{ $video.RelPermalink }}" class="video-card__link">
+    <div class="video-card__thumb-wrap">
+
+      {{/* Miniatura */}}
+      {{ if $video.Params.thumbnail }}
+        <img
+          src="{{ $video.Params.thumbnail | absURL }}"
+          alt="{{ $video.Title }}"
+          class="video-card__thumb"
+          loading="lazy">
+      {{ else }}
+        <div class="video-card__thumb-placeholder">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
+        </div>
+      {{ end }}
+
+      {{/* Délka videa */}}
+      {{ with $video.Params.duration }}
+        <span class="video-card__duration">{{ . }}</span>
+      {{ end }}
+
+      {{/* Typ: krátké / dlouhé */}}
+      {{ with $video.Params.type_video }}
+        <span class="video-card__type video-card__type--{{ . }}">
+          {{ if eq . "short" }}Krátké{{ else }}Dlouhé{{ end }}
+        </span>
+      {{ end }}
+
+      {{/* Featured badge */}}
+      {{ if $video.Params.featured }}
+        <span class="video-card__featured-badge">★ Doporučeno</span>
+      {{ end }}
+
+    </div>
+    <div class="video-card__body">
+      <h3 class="video-card__title">{{ $video.Title }}</h3>
+      <div class="video-card__meta">
+        <time datetime="{{ $video.Date.Format "2006-01-02" }}">{{ $video.Date.Format "2. 1. 2006" }}</time>
+        {{ with $video.Params.categories }}
+          <span class="video-card__meta-sep">·</span>
+          <div class="video-card__categories">
+            {{ range . }}
+              <span class="video-card__cat">{{ . }}</span>
+            {{ end }}
+          </div>
+        {{ end }}
+      </div>
+      {{ with $video.Params.description }}
+        <p class="video-card__desc">{{ . | truncate 100 }}</p>
+      {{ end }}
+    </div>
+  </a>
+</article>

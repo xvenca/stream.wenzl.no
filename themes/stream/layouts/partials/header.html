@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="container">
+    <a href="{{ "/" | relURL }}" class="site-logo" aria-label="{{ .Site.Title }}">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M8 5v14l11-7L8 5z"/>
+      </svg>
+      stream.wenzl.no
+    </a>
+    <nav class="site-nav" aria-label="Hlavní navigace">
+      <a href="{{ "/" | relURL }}"{{ if .IsHome }} class="active"{{ end }}>Domů</a>
+      <a href="{{ "/videos/" | relURL }}"{{ if (eq .Section "videos") }} class="active"{{ end }}>Videa</a>
+      <a href="{{ "/categories/" | relURL }}"{{ if (eq .Type "categories") }} class="active"{{ end }}>Kategorie</a>
+    </nav>
+  </div>
+</header>
