@@ -1,0 +1,22 @@
+{{ define "main" }}
+<div class="list-header">
+  <h1>Kategorie</h1>
+  <p>Videa seřazená podle témat</p>
+</div>
+
+{{ $terms := .Data.Terms.Alphabetical }}
+{{ if $terms }}
+  <div class="categories-grid">
+    {{ range $terms }}
+      <a href="{{ .Page.RelPermalink }}" class="category-card">
+        <div class="category-card__name">{{ .Page.Title }}</div>
+        <div class="category-card__count">{{ .Count }} {{ if eq .Count 1 }}video{{ else }}videa/videí{{ end }}</div>
+      </a>
+    {{ end }}
+  </div>
+{{ else }}
+  <div class="no-results">
+    <p>Zatím žádné kategorie.</p>
+  </div>
+{{ end }}
+{{ end }}
