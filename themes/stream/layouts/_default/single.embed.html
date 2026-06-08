@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+    video, iframe { display: block; width: 100%; height: 100%; }
+    .no-video {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: #666; font-family: sans-serif; font-size: 0.9rem; gap: 12px;
+    }
+    .no-video svg { width: 48px; height: 48px; fill: #444; }
+    .embed-credit {
+      position: fixed; bottom: 8px; right: 10px;
+      font-family: sans-serif; font-size: 0.7rem;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+    }
+    .embed-credit:hover { color: rgba(255,255,255,0.7); }
+  </style>
+</head>
+<body>
+  {{ if .Params.video_src }}
+    <video
+      controls
+      autoplay
+      preload="metadata"
+      {{ with .Params.thumbnail }}poster="{{ . | absURL }}"{{ end }}>
+      <source src="{{ .Params.video_src }}" type="video/mp4">
+    </video>
+  {{ else if .Params.embed_url }}
+    <iframe
+      src="{{ .Params.embed_url }}"
+      allowfullscreen
+      allow="autoplay; fullscreen"
+      frameborder="0"
+      title="{{ .Title }}">
+    </iframe>
+  {{ else }}
+    <div class="no-video">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7L8 5z"/></svg>
+      <p>Video není k dispozici</p>
+    </div>
+  {{ end }}
+  <a href="{{ .Permalink }}" class="embed-credit" target="_blank" rel="noopener">stream.wenzl.no</a>
+</body>
+</html>

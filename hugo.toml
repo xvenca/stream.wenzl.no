@@ -1,0 +1,40 @@
+baseURL = "https://stream.wenzl.no/"
+defaultContentLanguage = "cs"
+title = "stream.wenzl.no"
+
+[languages]
+  [languages.cs]
+    locale = "cs-CZ"
+    weight = 1
+theme = "stream"
+paginate = 12
+summaryLength = 70
+
+[taxonomies]
+  category = "categories"
+
+[outputFormats]
+  [outputFormats.Embed]
+    name       = "Embed"
+    baseName   = "embed"
+    isHTML     = true
+    mediaType  = "text/html"
+    notAlternative = true
+    permalinkable  = true
+
+[outputs]
+  home     = ["HTML", "RSS"]
+  section  = ["HTML", "RSS"]
+  page     = ["HTML", "Embed"]
+  taxonomy = ["HTML"]
+  term     = ["HTML"]
+
+[params]
+  description = "Vlastní streamovací platforma – Václav Wenzl"
+  author      = "Václav Wenzl"
+  siteURL     = "https://stream.wenzl.no"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
