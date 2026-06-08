@@ -1,24 +1,24 @@
 baseURL = "https://stream.wenzl.no/"
 defaultContentLanguage = "cs"
 title = "stream.wenzl.no"
+theme = "stream"
+paginate = 12
+summaryLength = 70
 
 [languages]
   [languages.cs]
     locale = "cs-CZ"
     weight = 1
-theme = "stream"
-paginate = 12
-summaryLength = 70
 
 [taxonomies]
   category = "categories"
 
 [outputFormats]
   [outputFormats.Embed]
-    name       = "Embed"
-    baseName   = "embed"
-    isHTML     = true
-    mediaType  = "text/html"
+    name           = "Embed"
+    baseName       = "embed"
+    isHTML         = true
+    mediaType      = "text/html"
     notAlternative = true
     permalinkable  = true
 
